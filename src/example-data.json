@@ -1,0 +1,14 @@
+[
+  {
+    "title": "Schedule vet appointment",
+    "complete": false
+  },
+  {
+    "title": "Make grocery list",
+    "complete": false
+  },
+  {
+    "title": "Play fetch with Sparkles",
+    "complete": true
+  }
+]
