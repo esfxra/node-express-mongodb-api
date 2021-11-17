@@ -1,25 +1,48 @@
 import express from 'express';
+import cors from 'cors';
+import morgan from 'morgan';
 
-import { connect, getDbClient } from './db.js';
+// import userRouter from './features/user/user.router.js';
+// import taskRouter from './features/task/task.router.js';
+// import categoryRouter from './features/task/category.router.js';
 
-const port = 3000;
-const app = express();
+export default async function runServer() {
+  const port = 3000;
+  const app = express();
 
-await connect();
+  // Set up middleware
+  app.use(cors());
+  app.use(express.json());
+  app.use(morgan('dev'));
 
-app.get('/', (req, res) => {
-  res.send('hello there');
-});
+  // Set up routes
+  // app.use('/api/users', userRouter);
+  // app.use('/api/tasks', taskRouter);
+  // app.use('/api/categories', categoryRouter);
 
-app.get('/data', async (req, res) => {
-  const dbClient = getDbClient();
-  const data = await dbClient
-    .db('node-tasks-api')
-    .collection('tasks')
-    .find()
-    .toArray();
+  if (process.env.NODE_ENV === 'test') {
+    app.use('/test', (req, res) =>
+      res.status(200).json({ success: 'The server is running' })
+    );
+  }
 
-  res.send(JSON.stringify(data));
-});
+  // Adapt the resulting server to a promise
+  return new Promise((resolve) => {
+    // Start listening
+    const server = app.listen(port, () =>
+      console.log(`Listening on port ${port}`)
+    );
 
-app.listen(port, () => console.log(`Listening on port ${port}`));
+    server.us;
+
+    // Adapt the close() function to a promise
+    function closeServer() {
+      return new Promise((resolve) => {
+        server.close(resolve);
+      });
+    }
+
+    // Resolve with the server, and with a function to close it
+    resolve([server, closeServer]);
+  });
+}
